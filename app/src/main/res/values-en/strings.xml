@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">CinemaLog</string>
+    <string name="watchlist">WATCHLIST</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_movie">MOVIES</string>
+    <string name="tab_tv_show">TV SHOWS</string>
+    <string name="title">Title</string>
+    <string name="year">Release</string>
+    <string name="description">Description</string>
+    <string name="overview">Overview</string>
+    <string name="english">English</string>
+    <string name="indonesian">Indonesian</string>
+    <string name="choose_language">Choose language</string>
+    <string name="ratting">Ratting</string>
+
+</resources>

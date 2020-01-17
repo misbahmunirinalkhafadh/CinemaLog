@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">CinemaLog</string>
+    <string name="watchlist">DAFTAR FILM</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_movie">FILM</string>
+    <string name="tab_tv_show">ACARA TV</string>
+    <string name="title">Judul</string>
+    <string name="year">Tayang</string>
+    <string name="description">Description</string>
+    <string name="overview">Ikhtisar</string>
+    <string name="english">Inggris</string>
+    <string name="indonesian">Indonesia</string>
+    <string name="choose_language">Pilih Bahasa</string>
+    <string name="ratting">Peringkat</string>
+
+</resources>
