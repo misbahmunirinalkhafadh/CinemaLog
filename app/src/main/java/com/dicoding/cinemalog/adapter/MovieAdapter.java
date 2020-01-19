@@ -10,8 +10,10 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dicoding.cinemalog.CustomOnItemClickListener;
 import com.dicoding.cinemalog.R;
 import com.dicoding.cinemalog.model.Movie;
 import com.dicoding.cinemalog.view.DetailMovieActivity;
@@ -27,12 +29,7 @@ import java.util.Locale;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private ArrayList<Movie> mData = new ArrayList<>();
-    private OnItemClickCallback onItemClickCallback;
     private Activity activity;
-
-    public void setOnItemClickCallback(OnItemClickCallback onItemClickCallback) {
-        this.onItemClickCallback = onItemClickCallback;
-    }
 
     public MovieAdapter(Activity activity) {
         this.activity = activity;
@@ -46,8 +43,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         if (items.size() > 0) {
             this.mData.clear();
         }
-//        mData.clear();
-        mData.addAll(items);
+        this.mData.addAll(items);
         notifyDataSetChanged();
     }
 
@@ -108,17 +104,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         holder.tvTitle.setText(movie.getTitle());
         holder.tvDesc.setText(movie.getDesc());
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.cvMovie.setOnClickListener(new CustomOnItemClickListener(position, new CustomOnItemClickListener.OnItemClickCallback() {
             @Override
-            public void onClick(View v) {
+            public void onItemClicked(View view, int position) {
                 Intent intent = new Intent(activity, DetailMovieActivity.class);
                 intent.putExtra(DetailMovieActivity.EXTRA_POSITION, position);
                 intent.putExtra(DetailMovieActivity.EXTRA_CINEMA, mData.get(position));
                 activity.startActivityForResult(intent, DetailMovieActivity.REQUEST_UPDATE);
-//                onItemClickCallback.onItemClicked(mData.get(holder.getAdapterPosition()));
             }
-        });
+        }));
     }
 
     @Override
@@ -129,6 +123,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     class MovieViewHolder extends RecyclerView.ViewHolder {
         ImageView imgPoster;
         RatingBar ratingBar;
+        CardView cvMovie;
         TextView tvTitle, tvYear, tvDesc, tvRatting;
 
         MovieViewHolder(@NonNull View itemView) {
@@ -139,10 +134,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvYear = itemView.findViewById(R.id.tv_year);
             tvDesc = itemView.findViewById(R.id.tv_description);
+            cvMovie = itemView.findViewById(R.id.cv_item_movie);
         }
-    }
-
-    public interface OnItemClickCallback {
-        void onItemClicked(Movie data);
     }
 }

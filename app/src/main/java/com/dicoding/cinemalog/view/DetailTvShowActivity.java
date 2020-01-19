@@ -39,11 +39,11 @@ public class DetailTvShowActivity extends AppCompatActivity {
     Button btnBack;
     ToggleButton tbFavorite;
     ScrollView svContent;
-
+    private int position;
     SharedPreferences sharedPreferences;
     Context context = this;
     private ProgressBar progressBar;
-
+    public static final String EXTRA_POSITION = "extra_position";
     public static final String EXTRA_TVSHOW = "extra_tvshow";
 
     @Override
@@ -96,6 +96,8 @@ public class DetailTvShowActivity extends AppCompatActivity {
 
             }
         });
+
+        position = getIntent().getIntExtra(EXTRA_POSITION, 0);
 
         setFavorite();
 

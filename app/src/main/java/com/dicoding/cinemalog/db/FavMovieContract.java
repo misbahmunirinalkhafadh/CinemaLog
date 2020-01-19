@@ -13,8 +13,9 @@ public class FavMovieContract {
         public static String TITLE = "title";
         public static String YEAR = "year";
         public static String RATING = "rating";
-        public static String DESCPRIPTION = "desc";
+        public static String DESCRIPTION = "desc";
         public static String POSTER = "poster";
 
     }
 }
+

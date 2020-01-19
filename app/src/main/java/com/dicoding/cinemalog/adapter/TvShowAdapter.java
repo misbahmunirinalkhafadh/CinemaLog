@@ -1,11 +1,14 @@
 package com.dicoding.cinemalog.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +28,8 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
 
     private ArrayList<TvShow> mData = new ArrayList<>();
     private OnItemClickCallback onItemClickCallback;
+    Context context;
+    SharedPreferences sharedPreferences;
 
     public void setOnItemClickCallback(OnItemClickCallback onItemClickCallback) {
         this.onItemClickCallback = onItemClickCallback;
@@ -44,7 +49,7 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final TvViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TvViewHolder holder, final int position) {
         TvShow tvShow = mData.get(position);
 
         String url_poster = "https://image.tmdb.org/t/p/w185";
@@ -73,7 +78,6 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
 
         holder.tvTitle.setText(tvShow.getName());
         holder.tvDesc.setText(tvShow.getDesc());
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,12 +92,14 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
     }
 
     class TvViewHolder extends RecyclerView.ViewHolder {
+        ToggleButton tbFavorite;
         ImageView imgPoster;
         RatingBar ratingBar;
         TextView tvTitle, tvYear, tvDesc, tvRatting;
 
         TvViewHolder(@NonNull View itemView) {
             super(itemView);
+            tbFavorite = itemView.findViewById(R.id.tb_favorite);
             imgPoster = itemView.findViewById(R.id.iv_poster);
             ratingBar = itemView.findViewById(R.id.rattingBar);
             tvRatting = itemView.findViewById(R.id.tv_ratting);

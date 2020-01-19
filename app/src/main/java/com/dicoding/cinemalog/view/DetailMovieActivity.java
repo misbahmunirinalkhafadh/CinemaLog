@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.DESCPRIPTION;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.DESCRIPTION;
 import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.FAVORITE;
 import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.MOVIE_ID;
 import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.POSTER;
@@ -61,6 +62,7 @@ public class DetailMovieActivity extends AppCompatActivity {
     private FavMovieHelper favMovieHelper;
 
     public static final String EXTRA_CINEMA = "extra_cinema";
+    public static final String EXTRA_FAVORITE = "extra_favorite";
     public static final String EXTRA_POSITION = "extra_position";
     public static final int RESULT_ADD = 101;
     public static final int REQUEST_UPDATE = 200;
@@ -80,9 +82,11 @@ public class DetailMovieActivity extends AppCompatActivity {
 
         showLoading(true);
 
+        favMovieHelper = new FavMovieHelper(getApplicationContext());
+
         movie = getIntent().getParcelableExtra(EXTRA_CINEMA);
         movieId = movie.getId();
-        poster = "https://image.tmdb.org/t/p/w500" + movie.getPoster();
+        poster = movie.getPoster();
         title = movie.getTitle();
         date = movie.getYear();
         desc = movie.getDesc();
@@ -109,7 +113,8 @@ public class DetailMovieActivity extends AppCompatActivity {
 
         tvTitle.setText(title);
         tvDesc.setText(desc);
-        Picasso.with(context).load(poster).into(imgPoster, new Callback() {
+        String url_poster = "https://image.tmdb.org/t/p/w500";
+        Picasso.with(context).load(url_poster + poster).into(imgPoster, new Callback() {
             @Override
             public void onSuccess() {
                 showLoading(false);
@@ -122,15 +127,23 @@ public class DetailMovieActivity extends AppCompatActivity {
         });
 
         // favorite
-        favMovieHelper = new FavMovieHelper(getApplicationContext());
-        if (favoriteMovie != null) {
-            position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-            Log.i("ADA", "" + position);
-            isEdit = true;
-        } else {
-            favoriteMovie = new FavoriteMovie();
-            Log.i("KOSONG", "" + position);
+        position = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        favoriteMovie = new FavoriteMovie();
+
+        // Get Status Favorite
+        Cursor cursor = favMovieHelper.queryById(String.valueOf(movieId));
+        if (cursor.moveToFirst()) {
+            do {
+                String data = cursor.getString(cursor.getColumnIndex("favorite"));
+                Log.i("FAVORITE", "STATUS " + data);
+                if (data.equals("1")) {
+                    tbFavorite.setChecked(true);
+                } else {
+                    tbFavorite.setChecked(false);
+                }
+            } while (cursor.moveToNext());
         }
+        cursor.close();
 
         setFavorite();
 
@@ -143,11 +156,6 @@ public class DetailMovieActivity extends AppCompatActivity {
     }
 
     private void setFavorite() {
-        boolean fav = (favoriteMovie.getFavorite() == 1);
-        Log.v("MASUK", " = " + fav);
-        sharedPreferences = getSharedPreferences("favorite", MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPreferences.edit();
-        tbFavorite.setChecked(fav);
         tbFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -156,25 +164,25 @@ public class DetailMovieActivity extends AppCompatActivity {
 
                 Intent intent = new Intent();
                 intent.putExtra(EXTRA_CINEMA, favoriteMovie);
+                intent.putExtra(EXTRA_POSITION, position);
 
                 ContentValues values = new ContentValues();
                 values.put(MOVIE_ID, movieId);
                 values.put(FAVORITE, favorite);
                 values.put(TITLE, title);
-                values.put(POSTER, poster);
                 values.put(YEAR, date);
                 values.put(RATING, rate);
-                values.put(DESCPRIPTION, desc);
+                values.put(DESCRIPTION, desc);
+                values.put(POSTER, poster);
 
                 if (isChecked) {
                     Log.v("Favorite", " = " + favoriteMovie.getFavorite());
                     long result = favMovieHelper.insert(values);
                     Log.v("Insert ", values.toString());
                     if (result > 0) {
-                        favoriteMovie.setId((int) result);
+                        favoriteMovie.setMovieId((int) result);
                         setResult(RESULT_ADD, intent);
                         tbFavorite.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
-                        editor.putBoolean("SaveFavorite", true);
 
                         Toast.makeText(getApplicationContext(), "SUCCESS add to Favorite", Toast.LENGTH_SHORT).show();
                         Log.d("BEHASIL", "Favorite ");
@@ -188,7 +196,6 @@ public class DetailMovieActivity extends AppCompatActivity {
                     if (result > 0) {
                         setResult(RESULT_DELETE, intent);
                         tbFavorite.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-                        editor.putBoolean("SaveFavorite", false);
 
                         Toast.makeText(getApplicationContext(), "REMOVE from Favorite", Toast.LENGTH_SHORT).show();
                         Log.d("BEHASIL", "Hapus Favorite");
@@ -196,7 +203,6 @@ public class DetailMovieActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "FAILED to remove from Favorite", Toast.LENGTH_SHORT).show();
                         Log.e("GAGAL", "Hapus Favorite " + result);
                     }
-                    editor.apply();
                 }
             }
         });

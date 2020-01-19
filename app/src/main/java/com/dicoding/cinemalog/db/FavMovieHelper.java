@@ -23,6 +23,7 @@ public class FavMovieHelper {
 
     /**
      * untuk menginisiasi database.
+     *
      * @param context
      * @return
      */
@@ -40,6 +41,7 @@ public class FavMovieHelper {
     /**
      * CONFIGURATION
      * metode untuk membuka dan menutup koneksi ke database
+     *
      * @throws SQLException
      */
     public void open() throws SQLException {
@@ -55,6 +57,7 @@ public class FavMovieHelper {
     /**
      * GET
      * Metode untuk untuk mengambil data.
+     *
      * @return
      */
     public Cursor queryAll() {
@@ -65,20 +68,22 @@ public class FavMovieHelper {
                 null,
                 null,
                 null,
-                _ID + " ASC");
+                MOVIE_ID + " ASC");
     }
 
     /**
      * GETBYID
      * metode untuk mengambil data dengan id tertentu.
+     *
      * @param id
      * @return
      */
     public Cursor queryById(String id) {
+        database = dataBaseHelper.getReadableDatabase();
         return database.query(
                 DATABASE_TABLE,
                 null,
-                _ID + " = ?",
+                MOVIE_ID + " = ?",
                 new String[]{id},
                 null,
                 null,
@@ -89,6 +94,7 @@ public class FavMovieHelper {
     /**
      * INSERT
      * metode untuk menyimpan data.
+     *
      * @param values
      * @return
      */
@@ -100,6 +106,7 @@ public class FavMovieHelper {
     /**
      * UPDATE
      * metode untuk memperbaharui data.
+     *
      * @param id
      * @param values
      * @return
@@ -111,6 +118,7 @@ public class FavMovieHelper {
     /**
      * DELETE
      * metode untuk menghapus data
+     *
      * @param id
      * @return
      */

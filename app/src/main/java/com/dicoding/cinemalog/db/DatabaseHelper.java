@@ -6,15 +6,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 16;
+    public static final int DATABASE_VERSION = 26;
     public static final String DATABASE_NAME = "CinemaLog.db";
 
     /**
      * Statement for table fav_movie
      */
     private static final String SQL_CREATE_TABLE_FAV_MOVIE = String.format("CREATE TABLE %s" +
-                    " (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " %s TEXT NOT NULL," +
+                    " (%s INTEGER PRIMARY KEY," +
                     " %s TEXT NOT NULL," +
                     " %s TEXT NOT NULL," +
                     " %s TEXT NOT NULL," +
@@ -22,13 +21,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     " %s TEXT NOT NULL," +
                     " %s TEXT NOT NULL)",
             FavMovieContract.TABLE_NAME,
-            FavMovieContract.FavMovieColumns._ID,
             FavMovieContract.FavMovieColumns.MOVIE_ID,
             FavMovieContract.FavMovieColumns.FAVORITE,
             FavMovieContract.FavMovieColumns.TITLE,
             FavMovieContract.FavMovieColumns.YEAR,
-            FavMovieContract.FavMovieColumns.DESCPRIPTION,
             FavMovieContract.FavMovieColumns.RATING,
+            FavMovieContract.FavMovieColumns.DESCRIPTION,
             FavMovieContract.FavMovieColumns.POSTER
     );
 
@@ -46,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //            FavTvShowContract.FavTvShowColumns._ID,
 //            FavTvShowContract.FavTvShowColumns.TITLE,
 //            FavTvShowContract.FavTvShowColumns.RELEASE,
-//            FavTvShowContract.FavTvShowColumns.DESCPRIPTION,
+//            FavTvShowContract.FavTvShowColumns.DESCRIPTION,
 //            FavTvShowContract.FavTvShowColumns.RATING,
 //            FavTvShowContract.FavTvShowColumns.POSTER
 //    );

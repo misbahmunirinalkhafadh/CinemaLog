@@ -87,6 +87,7 @@ public class TvShowFragment extends Fragment {
                 goToDetail.putExtra(DetailTvShowActivity.EXTRA_TVSHOW, data);
                 Objects.requireNonNull(getActivity()).startActivity(goToDetail);
             }
+
         });
     }
 

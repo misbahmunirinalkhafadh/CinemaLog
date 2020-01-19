@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.dicoding.cinemalog.R;
-import com.dicoding.cinemalog.view.MovieFragment;
+import com.dicoding.cinemalog.view.FavoriteMovieFragment;
 import com.dicoding.cinemalog.view.TvShowFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -43,7 +43,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new MovieFragment();
+                fragment = new FavoriteMovieFragment();
                 break;
             case 1:
                 fragment = new TvShowFragment();

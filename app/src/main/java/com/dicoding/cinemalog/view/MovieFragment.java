@@ -2,7 +2,6 @@ package com.dicoding.cinemalog.view;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dicoding.cinemalog.R;
 import com.dicoding.cinemalog.adapter.MovieAdapter;
+import com.dicoding.cinemalog.db.FavMovieHelper;
 import com.dicoding.cinemalog.model.Movie;
 import com.dicoding.cinemalog.viewmodel.MovieViewModel;
 
@@ -31,9 +31,12 @@ import java.util.Objects;
  */
 public class MovieFragment extends Fragment {
 
+    private RecyclerView rvMovies;
     private MovieAdapter adapter;
     private MovieViewModel movieViewModel;
     private ProgressBar progressBar;
+    private FavMovieHelper favMovieHelper;
+    private static final String EXTRA_STATE = "EXTRA_STATE";
 
     public MovieFragment() {
         // Required empty public constructor
@@ -54,7 +57,7 @@ public class MovieFragment extends Fragment {
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("languangeKey", Context.MODE_PRIVATE);
         String bahasa = (sharedPreferences.getString("keyLang", ""));
 
-        RecyclerView rvMovies = fragmentView.findViewById(R.id.rv_movie);
+        rvMovies = fragmentView.findViewById(R.id.rv_movie);
         progressBar = fragmentView.findViewById(R.id.progressBar);
 
         rvMovies.setHasFixedSize(true);
@@ -83,15 +86,6 @@ public class MovieFragment extends Fragment {
                     adapter.setData(movies);
                     showLoading(false);
                 }
-            }
-        });
-
-        adapter.setOnItemClickCallback(new MovieAdapter.OnItemClickCallback() {
-            @Override
-            public void onItemClicked(Movie data) {
-                Intent goToDetail = new Intent(getActivity(), DetailMovieActivity.class);
-                goToDetail.putExtra(DetailMovieActivity.EXTRA_CINEMA, data);
-                Objects.requireNonNull(getActivity()).startActivity(goToDetail);
             }
         });
     }

@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class FavoriteMovie implements Parcelable {
-    private int id;
     private int movieId;
     private int favorite;
     private String poster;
@@ -14,7 +13,6 @@ public class FavoriteMovie implements Parcelable {
     private String desc;
 
     private FavoriteMovie(Parcel in) {
-        id = in.readInt();
         movieId = in.readInt();
         favorite = in.readInt();
         poster = in.readString();
@@ -43,7 +41,6 @@ public class FavoriteMovie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
         dest.writeInt(movieId);
         dest.writeInt(favorite);
         dest.writeString(poster);
@@ -57,15 +54,17 @@ public class FavoriteMovie implements Parcelable {
      * Hasil Setter Getter
      * @return
      */
+    public FavoriteMovie(int movieId, int favorite, String poster, String rating, String title, String year, String desc) {
+        this.movieId = movieId;
+        this.favorite = favorite;
+        this.poster = poster;
+        this.rating = rating;
+        this.title = title;
+        this.year = year;
+        this.desc = desc;
+    }
+
     public FavoriteMovie() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getMovieId() {
