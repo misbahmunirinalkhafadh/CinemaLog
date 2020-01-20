@@ -9,4 +9,3 @@ interface LoadFavMovieCallback {
 
     void postExecute(ArrayList<FavoriteMovie> favoriteMovies);
 }
-

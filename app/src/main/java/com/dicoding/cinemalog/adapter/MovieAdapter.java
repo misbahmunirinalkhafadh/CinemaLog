@@ -35,37 +35,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         this.activity = activity;
     }
 
-    public ArrayList<Movie> getListMovie() {
-        return mData;
-    }
-
     public void setData(ArrayList<Movie> items) {
         if (items.size() > 0) {
             this.mData.clear();
         }
         this.mData.addAll(items);
         notifyDataSetChanged();
-    }
-
-    /**
-     * Method Create, Update, Delete
-     *
-     * @param movie
-     */
-    public void addItem(Movie movie) {
-        this.mData.add(movie);
-        notifyItemInserted(mData.size() - 1);
-    }
-
-    public void updateItem(int position, Movie movie) {
-        this.mData.set(position, movie);
-        notifyItemChanged(position, movie);
-    }
-
-    public void removeItem(int position) {
-        this.mData.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, mData.size());
     }
 
     @NonNull

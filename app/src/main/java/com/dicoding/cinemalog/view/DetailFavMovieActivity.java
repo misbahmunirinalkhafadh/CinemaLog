@@ -3,7 +3,6 @@ package com.dicoding.cinemalog.view;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,9 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.dicoding.cinemalog.R;
-import com.dicoding.cinemalog.db.FavTvShowHelper;
-import com.dicoding.cinemalog.model.FavoriteTvShow;
-import com.dicoding.cinemalog.model.TvShow;
+import com.dicoding.cinemalog.db.FavMovieHelper;
+import com.dicoding.cinemalog.model.FavoriteMovie;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -33,18 +31,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.DESCRIPTION;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.FAVORITE;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.NAME;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.POSTER;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.RATING;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.RELEASE;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.TVSHOW_ID;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.DESCRIPTION;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.FAVORITE;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.MOVIE_ID;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.POSTER;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.RATING;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.TITLE;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.YEAR;
 
-public class DetailTvShowActivity extends AppCompatActivity {
+public class DetailFavMovieActivity extends AppCompatActivity implements View.OnClickListener {
 
-    int tvShowId, favorite;
-    String poster, name, date, desc, rate;
+    int movieId, favorite;
+    String poster, title, date, desc, rate;
     TextView tvTitle, tvYear, tvDesc, tvRating;
     RatingBar ratingBar;
     ImageView imgPoster;
@@ -52,21 +50,26 @@ public class DetailTvShowActivity extends AppCompatActivity {
     ToggleButton tbFavorite;
     ScrollView svContent;
     Context context = this;
+    private boolean isEdit = false;
     private int position;
     private ProgressBar progressBar;
-    private FavoriteTvShow favoriteTvShow;
-    private FavTvShowHelper favTvShowHelper;
+    private FavoriteMovie favoriteMovie;
+    private FavMovieHelper favMovieHelper;
 
-    public static final String EXTRA_CINEMA = "extra_tvshow";
+    public static final String EXTRA_CINEMA = "extra_cinema";
     public static final String EXTRA_POSITION = "extra_position";
     public static final int RESULT_ADD = 101;
     public static final int REQUEST_UPDATE = 200;
+    public static final int RESULT_UPDATE = 201;
     public static final int RESULT_DELETE = 301;
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_tv_show);
+        setContentView(R.layout.activity_detail_fav_movie);
         //hide action bar
         getSupportActionBar().hide();
 
@@ -74,17 +77,24 @@ public class DetailTvShowActivity extends AppCompatActivity {
 
         showLoading(true);
 
-        favTvShowHelper = new FavTvShowHelper(getApplicationContext());
+        favMovieHelper = new FavMovieHelper(getApplicationContext());
 
-        TvShow tvShow = getIntent().getParcelableExtra(EXTRA_CINEMA);
-        tvShowId = tvShow.getId();
-        poster = tvShow.getPoster();
-        name = tvShow.getName();
-        date = tvShow.getRelease();
-        desc = tvShow.getDesc();
-        rate = tvShow.getRating();
+        favoriteMovie = getIntent().getParcelableExtra(EXTRA_CINEMA);
+        movieId = favoriteMovie.getMovieId();
+        favorite = favoriteMovie.getFavorite();
+        poster = favoriteMovie.getDesc();
+        title = favoriteMovie.getRating();
+        date = favoriteMovie.getPoster();
+        desc = favoriteMovie.getYear();
+        rate = favoriteMovie.getTitle();
+        Log.v("ID", "" + movieId);
+        Log.v("FAV", "" + favorite);
+        Log.v("POSTER", "" + poster);
+        Log.v("TITLE", "" + title);
+        Log.v("DATE", "" + date);
+        Log.v("DESC", "" + desc);
+        Log.v("RATE", "" + rate);
 
-        //Set release date format
         SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat output = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
         try {
@@ -104,7 +114,7 @@ public class DetailTvShowActivity extends AppCompatActivity {
             tvRating.setText(decimalFormat.format(rateStar));
         }
 
-        tvTitle.setText(name);
+        tvTitle.setText(title);
         tvDesc.setText(desc);
         String url_poster = "https://image.tmdb.org/t/p/w500";
         Picasso.with(context).load(url_poster + poster).into(imgPoster, new Callback() {
@@ -119,31 +129,25 @@ public class DetailTvShowActivity extends AppCompatActivity {
             }
         });
 
-        position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        favoriteTvShow = new FavoriteTvShow();
-        // Get Status Favorite
-        Cursor cursor = favTvShowHelper.queryById(String.valueOf(tvShowId));
-        if (cursor.moveToFirst()) {
-            do {
-                String data = cursor.getString(cursor.getColumnIndex("favorite"));
-                Log.i("FAVORITE", "STATUS " + data);
-                if (data.equals("1")) {
-                    tbFavorite.setChecked(true);
-                } else {
-                    tbFavorite.setChecked(false);
-                }
-            } while (cursor.moveToNext());
+        // favorite
+        if (1 == favorite) {
+            position = getIntent().getIntExtra(EXTRA_POSITION, 0);
+            isEdit = true;
+            tbFavorite.setChecked(true);
+            String id = Integer.toString(favoriteMovie.getMovieId());
+            Log.d("Cek ID", "MASUK" + id);
+        } else {
+            favoriteMovie = new FavoriteMovie();
+
+            tbFavorite.setChecked(false);
+            Log.d("Cek ID", "MASUK");
         }
-        cursor.close();
+//        position = getIntent().getIntExtra(EXTRA_POSITION, 0);
+//        favoriteMovie = new FavoriteMovie();
 
         setFavorite();
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        btnBack.setOnClickListener(this);
     }
 
     private void setFavorite() {
@@ -154,22 +158,24 @@ public class DetailTvShowActivity extends AppCompatActivity {
                 saveItem();
 
                 Intent intent = new Intent();
-                intent.putExtra(EXTRA_CINEMA, favoriteTvShow);
+                intent.putExtra(EXTRA_CINEMA, favoriteMovie);
                 intent.putExtra(EXTRA_POSITION, position);
 
                 ContentValues values = new ContentValues();
-                values.put(TVSHOW_ID, tvShowId);
+                values.put(MOVIE_ID, movieId);
                 values.put(FAVORITE, favorite);
-                values.put(NAME, name);
-                values.put(RELEASE, date);
+                values.put(TITLE, title);
+                values.put(YEAR, date);
                 values.put(RATING, rate);
                 values.put(DESCRIPTION, desc);
                 values.put(POSTER, poster);
 
                 if (isChecked) {
-                    long result = favTvShowHelper.insert(values);
+                    Log.v("Favorite", " = " + favoriteMovie.getFavorite());
+                    long result = favMovieHelper.insert(values);
+                    Log.v("Insert ", values.toString());
                     if (result > 0) {
-                        favoriteTvShow.setTvShowId((int) result);
+                        favoriteMovie.setMovieId((int) result);
                         setResult(RESULT_ADD, intent);
                         tbFavorite.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
 
@@ -180,13 +186,17 @@ public class DetailTvShowActivity extends AppCompatActivity {
                         Log.e("GAGAL", "Favorite");
                     }
                 } else {
-                    long result = favTvShowHelper.deleteById(String.valueOf(favoriteTvShow.getTvShowId()));
+                    Log.v("Favorite", " = " + favorite);
+//                    long result = favMovieHelper.update(String.valueOf(favoriteMovie.getMovieId()), val);
+                    long result = favMovieHelper.deleteById(String.valueOf(favoriteMovie.getMovieId()));
                     if (result > 0) {
                         setResult(RESULT_DELETE, intent);
+//                        setResult(RESULT_UPDATE, intent);
+                        finish();
                         tbFavorite.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
 
                         Toast.makeText(getApplicationContext(), "REMOVE from Favorite", Toast.LENGTH_SHORT).show();
-                        Log.d("BEHASIL", "Hapus Favorite");
+                        Log.d("UPDATE", "Favorite");
                     } else {
                         Toast.makeText(getApplicationContext(), "FAILED to remove from Favorite", Toast.LENGTH_SHORT).show();
                         Log.e("GAGAL", "Hapus Favorite " + result);
@@ -196,14 +206,33 @@ public class DetailTvShowActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_CINEMA, favoriteMovie);
+        intent.putExtra(EXTRA_POSITION, position);
+
+        if (favorite == 0) {
+            long result = favMovieHelper.deleteById(String.valueOf(favoriteMovie.getMovieId()));
+            if (result > 0) {
+                setResult(RESULT_DELETE, intent);
+                Log.d("BEHASIL", "Hapus Favorite");
+            }
+            finish();
+            super.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void saveItem() {
-        favoriteTvShow.setTvShowId(tvShowId);
-        favoriteTvShow.setFavorite(favorite);
-        favoriteTvShow.setName(name);
-        favoriteTvShow.setPoster(poster);
-        favoriteTvShow.setRelease(date);
-        favoriteTvShow.setRating(rate);
-        favoriteTvShow.setDesc(desc);
+        favoriteMovie.setMovieId(movieId);
+        favoriteMovie.setFavorite(favorite);
+        favoriteMovie.setTitle(title);
+        favoriteMovie.setPoster(poster);
+        favoriteMovie.setYear(date);
+        favoriteMovie.setRating(rate);
+        favoriteMovie.setDesc(desc);
     }
 
     private void initComponent() {
@@ -231,6 +260,26 @@ public class DetailTvShowActivity extends AppCompatActivity {
         } else {
             progressBar.setVisibility(View.GONE);
             svContent.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_CINEMA, favoriteMovie);
+        intent.putExtra(EXTRA_POSITION, position);
+
+        if (favorite == 0) {
+            long result = favMovieHelper.deleteById(String.valueOf(favoriteMovie.getMovieId()));
+            if (result > 0) {
+                setResult(RESULT_DELETE, intent);
+                Log.d("BEHASIL", "Hapus Favorite");
+            }
+            finish();
+            onBackPressed();
+        } else {
+            onBackPressed();
         }
     }
 }

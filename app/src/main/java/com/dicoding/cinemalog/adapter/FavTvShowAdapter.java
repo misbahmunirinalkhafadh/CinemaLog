@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dicoding.cinemalog.CustomOnItemClickListener;
 import com.dicoding.cinemalog.R;
-import com.dicoding.cinemalog.model.FavoriteMovie;
-import com.dicoding.cinemalog.view.DetailFavMovieActivity;
+import com.dicoding.cinemalog.model.FavoriteTvShow;
+import com.dicoding.cinemalog.view.DetailFavTvShowActivity;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
@@ -28,26 +28,41 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.MovieViewHolder> {
+public class FavTvShowAdapter extends RecyclerView.Adapter<FavTvShowAdapter.TvShowViewHolder> {
 
-    private ArrayList<FavoriteMovie> mData = new ArrayList<>();
+    private ArrayList<FavoriteTvShow> mData = new ArrayList<>();
     private Activity activity;
     Context context;
 
-    public FavMovieAdapter(Activity activity) {
+    public FavTvShowAdapter(Activity activity) {
         this.activity = activity;
     }
 
-    public ArrayList<FavoriteMovie> getmData() {
+    public ArrayList<FavoriteTvShow> getmData() {
         return mData;
     }
 
-    public void setmData(ArrayList<FavoriteMovie> mData) {
+    public void setmData(ArrayList<FavoriteTvShow> mData) {
         if (mData.size() > 0) {
             this.mData.clear();
         }
         this.mData.addAll(mData);
         notifyDataSetChanged();
+    }
+
+    /**
+     * Method Create, Update, Delete
+     *
+     * @param favoriteTvShow
+     */
+    public void addItem(FavoriteTvShow favoriteTvShow) {
+        this.mData.add(favoriteTvShow);
+        notifyItemInserted(mData.size() - 1);
+    }
+
+    public void updateItem(int position, FavoriteTvShow favoriteTvShow) {
+        this.mData.set(position, favoriteTvShow);
+        notifyItemChanged(position, favoriteTvShow);
     }
 
     public void removeItem(int position) {
@@ -58,22 +73,22 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.MovieV
 
     @NonNull
     @Override
-    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
-        View mView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_favorite_movie, viewGroup, false);
-        return new MovieViewHolder(mView);
+    public TvShowViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
+        View mView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_list_favorite_tvshow, viewGroup, false);
+        return new TvShowViewHolder(mView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MovieViewHolder holder, final int position) {
-        final FavoriteMovie favoriteMovie = mData.get(position);
+    public void onBindViewHolder(@NonNull final TvShowViewHolder holder, final int position) {
+        final FavoriteTvShow favoriteTvShow = mData.get(position);
 
-        String poster = "https://image.tmdb.org/t/p/w185" + favoriteMovie.getDesc();
-        String title = favoriteMovie.getRating();
-        String date = favoriteMovie.getPoster();
-        String rate = favoriteMovie.getTitle();
-        String desc = favoriteMovie.getYear();
+        String poster = "https://image.tmdb.org/t/p/w185" + favoriteTvShow.getDesc();
+        String title = favoriteTvShow.getPoster();
+        String date = favoriteTvShow.getRating();
+        String rate = favoriteTvShow.getName();
+        String desc = favoriteTvShow.getRelease();
         Log.v("POSTER", poster);
-        Log.v("TITLE", title);
+        Log.v("NAME", title);
         Log.v("YEAR", date);
         Log.v("RATING", rate);
         Log.v("DESC", desc);
@@ -89,7 +104,7 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.MovieV
         Float rateStar = Float.parseFloat(rate);
         DecimalFormat decimalFormat = new DecimalFormat("#.0");
         holder.ratingBar.setRating(rateStar / 2);
-        if (favoriteMovie.getRating().equals("0")) {
+        if (favoriteTvShow.getRating().equals("0")) {
             holder.tvRatting.setText("0");
         } else {
             holder.tvRatting.setText(decimalFormat.format(rateStar));
@@ -107,13 +122,13 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.MovieV
 
         holder.tvTitle.setText(title);
         holder.tvDesc.setText(desc);
-        holder.cvFavMovie.setOnClickListener(new CustomOnItemClickListener(position, new CustomOnItemClickListener.OnItemClickCallback() {
+        holder.cvFavTvShow.setOnClickListener(new CustomOnItemClickListener(position, new CustomOnItemClickListener.OnItemClickCallback() {
             @Override
             public void onItemClicked(View view, int position) {
-                Intent intent = new Intent(activity, DetailFavMovieActivity.class);
-                intent.putExtra(DetailFavMovieActivity.EXTRA_POSITION, position);
-                intent.putExtra(DetailFavMovieActivity.EXTRA_CINEMA, mData.get(position));
-                activity.startActivityForResult(intent, DetailFavMovieActivity.REQUEST_UPDATE);
+                Intent intent = new Intent(activity, DetailFavTvShowActivity.class);
+                intent.putExtra(DetailFavTvShowActivity.EXTRA_POSITION, position);
+                intent.putExtra(DetailFavTvShowActivity.EXTRA_CINEMA, mData.get(position));
+                activity.startActivityForResult(intent, DetailFavTvShowActivity.REQUEST_UPDATE);
             }
         }));
     }
@@ -123,15 +138,15 @@ public class FavMovieAdapter extends RecyclerView.Adapter<FavMovieAdapter.MovieV
         return mData.size();
     }
 
-    class MovieViewHolder extends RecyclerView.ViewHolder {
-        CardView cvFavMovie;
+    class TvShowViewHolder extends RecyclerView.ViewHolder {
+        CardView cvFavTvShow;
         ImageView imgPoster;
         RatingBar ratingBar;
         TextView tvTitle, tvYear, tvDesc, tvRatting;
 
-        MovieViewHolder(@NonNull View itemView) {
+        TvShowViewHolder(@NonNull View itemView) {
             super(itemView);
-            cvFavMovie = itemView.findViewById(R.id.cv_item_fav_movie);
+            cvFavTvShow = itemView.findViewById(R.id.cv_item_fav_tvshow);
             imgPoster = itemView.findViewById(R.id.iv_poster);
             ratingBar = itemView.findViewById(R.id.rattingBar);
             tvRatting = itemView.findViewById(R.id.tv_ratting);

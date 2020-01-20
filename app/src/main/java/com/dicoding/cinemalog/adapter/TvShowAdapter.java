@@ -1,20 +1,22 @@
 package com.dicoding.cinemalog.adapter;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dicoding.cinemalog.CustomOnItemClickListener;
 import com.dicoding.cinemalog.R;
 import com.dicoding.cinemalog.model.TvShow;
+import com.dicoding.cinemalog.view.DetailTvShowActivity;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
@@ -27,16 +29,16 @@ import java.util.Locale;
 public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHolder> {
 
     private ArrayList<TvShow> mData = new ArrayList<>();
-    private OnItemClickCallback onItemClickCallback;
-    Context context;
-    SharedPreferences sharedPreferences;
+    private Activity activity;
 
-    public void setOnItemClickCallback(OnItemClickCallback onItemClickCallback) {
-        this.onItemClickCallback = onItemClickCallback;
+    public TvShowAdapter(Activity activity) {
+        this.activity = activity;
     }
 
     public void setData(ArrayList<TvShow> items) {
-        mData.clear();
+        if (items.size() > 0) {
+            this.mData.clear();
+        }
         mData.addAll(items);
         notifyDataSetChanged();
     }
@@ -78,12 +80,15 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
 
         holder.tvTitle.setText(tvShow.getName());
         holder.tvDesc.setText(tvShow.getDesc());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.cvTvShow.setOnClickListener(new CustomOnItemClickListener(position, new CustomOnItemClickListener.OnItemClickCallback() {
             @Override
-            public void onClick(View v) {
-                onItemClickCallback.onItemClicked(mData.get(holder.getAdapterPosition()));
+            public void onItemClicked(View view, int position) {
+                Intent intent = new Intent(activity, DetailTvShowActivity.class);
+                intent.putExtra(DetailTvShowActivity.EXTRA_POSITION, position);
+                intent.putExtra(DetailTvShowActivity.EXTRA_CINEMA, mData.get(position));
+                activity.startActivityForResult(intent, DetailTvShowActivity.REQUEST_UPDATE);
             }
-        });
+        }));
     }
 
     @Override
@@ -92,25 +97,20 @@ public class TvShowAdapter extends RecyclerView.Adapter<TvShowAdapter.TvViewHold
     }
 
     class TvViewHolder extends RecyclerView.ViewHolder {
-        ToggleButton tbFavorite;
         ImageView imgPoster;
         RatingBar ratingBar;
+        CardView cvTvShow;
         TextView tvTitle, tvYear, tvDesc, tvRatting;
 
         TvViewHolder(@NonNull View itemView) {
             super(itemView);
-            tbFavorite = itemView.findViewById(R.id.tb_favorite);
             imgPoster = itemView.findViewById(R.id.iv_poster);
             ratingBar = itemView.findViewById(R.id.rattingBar);
             tvRatting = itemView.findViewById(R.id.tv_ratting);
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvYear = itemView.findViewById(R.id.tv_year);
             tvDesc = itemView.findViewById(R.id.tv_description);
+            cvTvShow = itemView.findViewById(R.id.cv_item_tvshow);
         }
-    }
-
-
-    public interface OnItemClickCallback {
-        void onItemClicked(TvShow data);
     }
 }

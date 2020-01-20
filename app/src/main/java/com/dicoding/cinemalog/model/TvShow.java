@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class TvShow implements Parcelable {
+    private int id;
     private String poster;
     private String rating;
     private String name;
@@ -11,6 +12,14 @@ public class TvShow implements Parcelable {
     private String desc;
 
     public TvShow() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getPoster() {
@@ -54,6 +63,7 @@ public class TvShow implements Parcelable {
     }
 
     private TvShow(Parcel in) {
+        id = in.readInt();
         poster = in.readString();
         rating = in.readString();
         name = in.readString();
@@ -80,6 +90,7 @@ public class TvShow implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(poster);
         dest.writeString(rating);
         dest.writeString(name);

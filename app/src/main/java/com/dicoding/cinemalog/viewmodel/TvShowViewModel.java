@@ -40,6 +40,7 @@ public class TvShowViewModel extends ViewModel {
                     for (int i = 0; i < list.length(); i++) {
                         JSONObject tvshow = list.getJSONObject(i);
                         TvShow tvShows = new TvShow();
+                        tvShows.setId(tvshow.getInt("id"));
                         tvShows.setRating(tvshow.getString("vote_average"));
                         tvShows.setName(tvshow.getString("name"));
                         tvShows.setRelease(tvshow.getString("first_air_date"));

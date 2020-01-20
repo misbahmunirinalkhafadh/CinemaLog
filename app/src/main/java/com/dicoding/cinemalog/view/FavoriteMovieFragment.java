@@ -1,6 +1,7 @@
 package com.dicoding.cinemalog.view;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,7 +41,6 @@ public class FavoriteMovieFragment extends Fragment implements LoadFavMovieCallb
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class FavoriteMovieFragment extends Fragment implements LoadFavMovieCallb
         favMovieHelper.open();
 
         new LoadFavMovieAsync(favMovieHelper, this).execute();
+
         if (savedInstanceState == null) {
             new LoadFavMovieAsync(favMovieHelper, this).execute();
         } else {
@@ -73,6 +75,17 @@ public class FavoriteMovieFragment extends Fragment implements LoadFavMovieCallb
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(EXTRA_STATE, adapter.getmData());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == DetailFavMovieActivity.RESULT_DELETE){
+            int position = data.getIntExtra(DetailFavMovieActivity.EXTRA_POSITION, 0);
+            adapter.removeItem(position);
+            showSnackbarMessage("Satu item berhasil dihapus");
+        }
     }
 
     private void showSnackbarMessage(String message) {
@@ -113,7 +126,7 @@ public class FavoriteMovieFragment extends Fragment implements LoadFavMovieCallb
 
         @Override
         protected ArrayList<FavoriteMovie> doInBackground(Void... voids) {
-            Cursor cursor = weakNoteHelper.get().queryAll();
+            Cursor cursor = weakNoteHelper.get().queryByFavorite();
             return FavMovieMappingHelper.mapCursorToArrayList(cursor);
         }
 
@@ -129,10 +142,4 @@ public class FavoriteMovieFragment extends Fragment implements LoadFavMovieCallb
             weakCallback.get().postExecute(favoriteMovies);
         }
     }
-//
-//    interface LoadFavMovieCallback {
-//        void preExecute();
-//
-//        void postExecute(ArrayList<FavoriteMovie> favoriteMovies);
-//    }
 }

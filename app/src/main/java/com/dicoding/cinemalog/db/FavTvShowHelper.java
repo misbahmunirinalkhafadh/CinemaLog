@@ -7,11 +7,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static android.provider.BaseColumns._ID;
-import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.TABLE_NAME;
+import static com.dicoding.cinemalog.db.FavTvShowContract.FavTvShowColumns.TVSHOW_ID;
+import static com.dicoding.cinemalog.db.FavTvShowContract.TABLE_FAVORITE_TVSHOW;
 
 public class FavTvShowHelper {
-    private static final String DATABASE_TABLE = TABLE_NAME;
+    private static final String DATABASE_TABLE = TABLE_FAVORITE_TVSHOW;
     private static DatabaseHelper dataBaseHelper;
     private static FavTvShowHelper INSTANCE;
     private static SQLiteDatabase database;
@@ -67,7 +67,7 @@ public class FavTvShowHelper {
                 null,
                 null,
                 null,
-                _ID + " ASC");
+                TVSHOW_ID + " ASC");
     }
 
     /**
@@ -78,10 +78,11 @@ public class FavTvShowHelper {
      * @return
      */
     public Cursor queryById(String id) {
+        database = dataBaseHelper.getWritableDatabase();
         return database.query(
                 DATABASE_TABLE,
                 null,
-                _ID + " = ?",
+                TVSHOW_ID + " = ?",
                 new String[]{id},
                 null,
                 null,
@@ -97,6 +98,7 @@ public class FavTvShowHelper {
      * @return
      */
     public long insert(ContentValues values) {
+        database = dataBaseHelper.getWritableDatabase();
         return database.insert(DATABASE_TABLE, null, values);
     }
 
@@ -109,7 +111,7 @@ public class FavTvShowHelper {
      * @return
      */
     public int update(String id, ContentValues values) {
-        return database.update(DATABASE_TABLE, values, _ID + " = ?", new String[]{id});
+        return database.update(DATABASE_TABLE, values, TVSHOW_ID + " = ?", new String[]{id});
     }
 
     /**
@@ -120,6 +122,6 @@ public class FavTvShowHelper {
      * @return
      */
     public int deleteById(String id) {
-        return database.delete(DATABASE_TABLE, _ID + " = ?", new String[]{id});
+        return database.delete(DATABASE_TABLE, TVSHOW_ID + " = ?", new String[]{id});
     }
 }

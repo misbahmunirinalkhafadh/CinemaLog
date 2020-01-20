@@ -7,12 +7,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static android.provider.BaseColumns._ID;
+import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.FAVORITE;
 import static com.dicoding.cinemalog.db.FavMovieContract.FavMovieColumns.MOVIE_ID;
-import static com.dicoding.cinemalog.db.FavMovieContract.TABLE_NAME;
+import static com.dicoding.cinemalog.db.FavMovieContract.TABLE_FAVORITE_MOVIE;
 
 public class FavMovieHelper {
-    private static final String DATABASE_TABLE = TABLE_NAME;
+    private static final String DATABASE_TABLE = TABLE_FAVORITE_MOVIE;
     private static DatabaseHelper dataBaseHelper;
     private static FavMovieHelper INSTANCE;
     private static SQLiteDatabase database;
@@ -71,6 +71,17 @@ public class FavMovieHelper {
                 MOVIE_ID + " ASC");
     }
 
+    public Cursor queryByFavorite() {
+        return database.query(
+                DATABASE_TABLE,
+                null,
+                FAVORITE + " = 1 ",
+                null,
+                null,
+                null,
+                MOVIE_ID + " ASC");
+    }
+
     /**
      * GETBYID
      * metode untuk mengambil data dengan id tertentu.
@@ -112,7 +123,7 @@ public class FavMovieHelper {
      * @return
      */
     public int update(String id, ContentValues values) {
-        return database.update(DATABASE_TABLE, values, _ID + " = ?", new String[]{id});
+        return database.update(DATABASE_TABLE, values, MOVIE_ID + " = ?", new String[]{id});
     }
 
     /**

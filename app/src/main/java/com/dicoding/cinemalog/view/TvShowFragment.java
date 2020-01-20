@@ -2,7 +2,6 @@ package com.dicoding.cinemalog.view;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,9 +16,9 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.dicoding.cinemalog.R;
 import com.dicoding.cinemalog.adapter.TvShowAdapter;
 import com.dicoding.cinemalog.model.TvShow;
-import com.dicoding.cinemalog.R;
 import com.dicoding.cinemalog.viewmodel.TvShowViewModel;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class TvShowFragment extends Fragment {
 
         rvListTvShow.setHasFixedSize(true);
         rvListTvShow.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new TvShowAdapter();
+        adapter = new TvShowAdapter(getActivity());
         adapter.notifyDataSetChanged();
         rvListTvShow.setAdapter(adapter);
 
@@ -78,16 +77,6 @@ public class TvShowFragment extends Fragment {
                     showLoading(false);
                 }
             }
-        });
-
-        adapter.setOnItemClickCallback(new TvShowAdapter.OnItemClickCallback() {
-            @Override
-            public void onItemClicked(TvShow data) {
-                Intent goToDetail = new Intent(getActivity(), DetailTvShowActivity.class);
-                goToDetail.putExtra(DetailTvShowActivity.EXTRA_TVSHOW, data);
-                Objects.requireNonNull(getActivity()).startActivity(goToDetail);
-            }
-
         });
     }
 

@@ -3,7 +3,6 @@ package com.dicoding.cinemalog.view;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,17 +51,13 @@ public class DetailMovieActivity extends AppCompatActivity {
     Button btnBack;
     ToggleButton tbFavorite;
     ScrollView svContent;
-    SharedPreferences sharedPreferences;
-    Movie movie;
     Context context = this;
-    private boolean isEdit = false;
     private int position;
     private ProgressBar progressBar;
     private FavoriteMovie favoriteMovie;
     private FavMovieHelper favMovieHelper;
 
     public static final String EXTRA_CINEMA = "extra_cinema";
-    public static final String EXTRA_FAVORITE = "extra_favorite";
     public static final String EXTRA_POSITION = "extra_position";
     public static final int RESULT_ADD = 101;
     public static final int REQUEST_UPDATE = 200;
@@ -84,7 +79,7 @@ public class DetailMovieActivity extends AppCompatActivity {
 
         favMovieHelper = new FavMovieHelper(getApplicationContext());
 
-        movie = getIntent().getParcelableExtra(EXTRA_CINEMA);
+        Movie movie = getIntent().getParcelableExtra(EXTRA_CINEMA);
         movieId = movie.getId();
         poster = movie.getPoster();
         title = movie.getTitle();

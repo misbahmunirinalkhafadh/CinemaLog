@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dicoding.cinemalog.R;
 import com.dicoding.cinemalog.adapter.MovieAdapter;
-import com.dicoding.cinemalog.db.FavMovieHelper;
 import com.dicoding.cinemalog.model.Movie;
 import com.dicoding.cinemalog.viewmodel.MovieViewModel;
 
@@ -31,12 +30,9 @@ import java.util.Objects;
  */
 public class MovieFragment extends Fragment {
 
-    private RecyclerView rvMovies;
     private MovieAdapter adapter;
     private MovieViewModel movieViewModel;
     private ProgressBar progressBar;
-    private FavMovieHelper favMovieHelper;
-    private static final String EXTRA_STATE = "EXTRA_STATE";
 
     public MovieFragment() {
         // Required empty public constructor
@@ -57,7 +53,7 @@ public class MovieFragment extends Fragment {
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("languangeKey", Context.MODE_PRIVATE);
         String bahasa = (sharedPreferences.getString("keyLang", ""));
 
-        rvMovies = fragmentView.findViewById(R.id.rv_movie);
+        RecyclerView rvMovies = fragmentView.findViewById(R.id.rv_movie);
         progressBar = fragmentView.findViewById(R.id.progressBar);
 
         rvMovies.setHasFixedSize(true);
